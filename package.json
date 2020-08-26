@@ -7,10 +7,11 @@
     "start": "nodemon index.js"
   },
   "dependencies": {
-    "express": "^4.17.1",
-    "express-graphql": "^0.11.0",
+    "apollo-server": "^2.16.1",
     "graphql": "^15.3.0",
     "nodemon": "^2.0.4"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
 }
