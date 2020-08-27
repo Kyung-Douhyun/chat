@@ -9,11 +9,17 @@
 	"dependencies": {
 		"apollo-server-express": "^2.16.1",
 		"bcryptjs": "^2.4.3",
+		"connect-redis": "^5.0.0",
+		"cookie-parser": "^1.4.5",
+		"cookie-session": "^1.4.0",
 		"esm": "^3.2.25",
 		"express": "^4.17.1",
+		"express-session": "^1.17.1",
 		"graphql": "^15.3.0",
 		"joi": "^17.2.1",
-		"mongoose": "^5.10.0"
+		"mongoose": "^5.10.0",
+		"redis": "^3.0.2",
+		"redis-server": "^1.2.2"
 	},
 	"devDependencies": {
 		"cross-env": "^7.0.2",

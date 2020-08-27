@@ -1,18 +1,20 @@
 import mongoose from 'mongoose';
-import Joi from 'joi';
 import { UserInputError } from 'apollo-server-express';
 import { User } from '../models';
-import { SignUp } from '../schemas';
+import { signUp, signIn } from '../schemas';
+import * as Auth from '../auth';
 
 export default {
 	Query: {
-		users: (root, args, context, info) => {
-			// TODO: auth(인증), projection(투사,투영), pagination(페이지 매기기)
+		me: (root, args, { req }, info) => {
+			Auth.checkSignedIn(req);
+			return User.findById(req.session.userId);
+		},
+		users: (root, args, { req }, info) => {
+			Auth.checkSignedIn(req);
 			return User.find({});
 		},
-		user: (root, { id }, context, info) => {
-			// TODO: auth, projection
-
+		user: (root, { id }, { req }, info) => {
 			if (!mongoose.Types.ObjectId.isValid(id)) {
 				throw new UserInputError(
 					`${id} is not a valid user ID.`,
@@ -24,12 +26,38 @@ export default {
 	},
 
 	Mutation: {
-		signUp: async (root, args, context, info) => {
-			// TODO: not auth, validation
-			await SignUp.validateAsync(args, {
+		signUp: async (root, args, { req }, info) => {
+			Auth.checkSignedOut(req);
+			await signUp.validateAsync(args, {
 				abortEarly: false,
 			});
-			return User.create(args);
+			const user = await User.create(args);
+			req.session.userId = user.id;
+			return user;
+		},
+
+		signIn: async (root, args, { req }, info) => {
+			const { userId } = req.session;
+
+			if (userId) {
+				return User.findById(userId);
+			}
+			await signIn.validateAsync(args, {
+				aboutEarly: false,
+			});
+			const user = await Auth.attemptsignIn(
+				args.email,
+				args.password,
+			);
+
+			req.session.userId = user.id;
+
+			return user;
+		},
+
+		signOut: (root, args, { req, res }, info) => {
+			Auth.checkSignedIn(req);
+			return Auth.signOut(req, res);
 		},
 	},
 };
